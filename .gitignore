@@ -3,45 +3,9 @@
 
 # CMake build directories
 cmake-build-*/
-project/cmake-build-*/
-CMakeCache.txt
-CMakeFiles/
-CTestTestfile.cmake
-cmake_install.cmake
-compile_commands.json
-Makefile
-Testing/
-_deps/
 
-# Build outputs
-*.o
-*.obj
-*.a
-*.so
-*.dylib
-*.dll
-*.lib
-*.exe
-*.out
+# Fuzzing
+fuzz/corpus_work/
 
-# Fuzzing and coverage artifacts
-*.profraw
-*.profdata
-*.gcda
-*.gcno
-*.gcov
-default.profraw
-coverage/
-
-# Logs and temp files
-*.log
-*.tmp
-*.swp
-*.swo
-*~
-
-# Archives / downloaded local artifacts
-*.tar
-*.tar.gz
-*.tgz
+# Archives
 *.zip
