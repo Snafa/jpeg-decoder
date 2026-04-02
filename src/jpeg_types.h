@@ -8,7 +8,7 @@
 #include <vector>
 
 #include <huffman.h>
-#include <image.h>
+#include <../include/image.h>
 
 inline constexpr size_t kTableSize = 64;
 

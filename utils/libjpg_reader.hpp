@@ -2,6 +2,6 @@
 
 #include <string>
 
-#include "image.h"
+#include "../include/image.h"
 
 Image ReadJpg(const std::string& filename);

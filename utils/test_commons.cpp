@@ -3,7 +3,7 @@
 #include <catch.hpp>
 #include <decoder.h>
 
-#include "image.h"
+#include "../include/image.h"
 #include "png_encoder.hpp"
 #include "libjpg_reader.hpp"
 

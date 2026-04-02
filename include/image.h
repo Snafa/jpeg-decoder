@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <cstddef>
 #include <string>
 #include <stdexcept>
 
@@ -11,13 +10,12 @@ struct RGB {
 
 class Image {
 public:
-    Image() {
-    }
-    Image(size_t width, size_t height) {
+    Image() = default;
+    Image(const size_t width, const size_t height) {
         SetSize(width, height);
     }
 
-    void SetSize(size_t width, size_t height) {
+    void SetSize(const size_t width, const size_t height) {
 #ifdef MAX_ALLOWED_IMAGE_SIZE_BYTES
         if (width * height * sizeof(RGB) > MAX_ALLOWED_IMAGE_SIZE_BYTES) {
             throw std::invalid_argument("Too big image");
@@ -26,26 +24,26 @@ public:
         data_.assign(height, std::vector<RGB>(width));
     }
 
-    size_t Width() const {
+    [[nodiscard]] size_t Width() const {
         if (data_.empty()) {
             return 0;
         }
         return data_[0].size();
     }
 
-    size_t Height() const {
+    [[nodiscard]] size_t Height() const {
         return data_.size();
     }
 
-    void SetPixel(int y, int x, const RGB& pixel) {
+    void SetPixel(const int y, const int x, const RGB& pixel) {
         data_[y][x] = pixel;
     }
 
-    RGB GetPixel(int y, int x) const {
+    [[nodiscard]] RGB GetPixel(const int y, const int x) const {
         return data_[y][x];
     }
 
-    RGB& GetPixel(int y, int x) {
+    RGB& GetPixel(const int y, const int x) {
         return data_[y][x];
     }
 
@@ -53,7 +51,7 @@ public:
         comment_ = comment;
     }
 
-    const std::string& GetComment() const {
+    [[nodiscard]] const std::string& GetComment() const {
         return comment_;
     }
 
