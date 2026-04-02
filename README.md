@@ -1,21 +1,23 @@
 # JPEG Decoder (Baseline JPEG, C++)
 
-Учебный проект: реализация декодера baseline JPEG на C++.
+Учебный проект по реализации декодера **baseline sequential JPEG** на C++.
 
-Проект разбирает JPEG-поток, декодирует энтропийно-сжатые данные, выполняет dequantization, inverse DCT, upsampling компонент и преобразование `YCbCr -> RGB`.
+Декодер разбирает JPEG-поток, читает служебные сегменты, декодирует entropy-coded data, выполняет dequantization, inverse DCT, upsampling цветовых компонент и преобразование `YCbCr -> RGB`.
 
-В репозитории есть:
-- standalone CMake-сборка
-- unit / integration / performance tests
-- replay regression проход по malformed inputs
+Проект включает:
+- standalone CMake build
+- CLI для декодирования JPEG в `PPM`
+- unit / integration / regression / performance tests
 - fuzz targets для ключевых частей декодера
-- CLI-утилита для декодирования JPEG в `PPM`
+- replay regression checks для найденных malformed inputs
 
 ---
 
-## Что реализовано
+## Supported functionality
 
-- parsing JPEG markers:
+Реализовано:
+
+- parsing JPEG markers and segments:
   - `SOI`
   - `COM`
   - `APPn` (skip)
@@ -26,87 +28,80 @@
   - `EOI`
 - baseline sequential JPEG decoding
 - Huffman entropy decoding
-- dequantization of 8x8 blocks
+- dequantization of `8x8` blocks
 - inverse DCT via FFTW
-- upsampling of color components
+- chroma upsampling
 - conversion from `YCbCr` to `RGB`
 - extraction of JPEG comment (`COM`)
-- CLI-утилита для декодирования JPEG в `PPM`
+- CLI decoding to binary `PPM` (`P6`)
 
 ---
 
-## Ограничения
+## Limitations
 
-Сейчас проект поддерживает не весь стандарт JPEG.
+Проект не покрывает весь стандарт JPEG.
 
-Не реализовано:
+Не поддерживаются:
+
 - progressive JPEG
 - arithmetic coding
 - restart markers
 - CMYK / YCCK
-- редко используемые расширения стандарта JPEG
+- редкие и нестандартные расширения JPEG
 
-Проект ориентирован на baseline JPEG и предназначен в первую очередь как учебная реализация.
-
----
-
-## Архитектура
-
-Пайплайн декодирования:
-
-1. Чтение JPEG markers и служебных сегментов
-2. Загрузка quantization tables (`DQT`)
-3. Загрузка Huffman tables (`DHT`)
-4. Чтение параметров кадра (`SOF0`) и скана (`SOS`)
-5. Entropy decoding MCU-блоков
-6. Восстановление DC/AC коэффициентов
-7. Dequantization
-8. Inverse DCT
-9. Upsampling компонент
-10. Преобразование `YCbCr -> RGB`
-
-### Структура кода
-
-- `decoder.cpp` — верхнеуровневый orchestration-код и `Decode(...)`
-- `jpeg_segments.cpp` — parsing JPEG segments (`DQT`, `SOF0`, `DHT`, `SOS`, `COM`)
-- `jpeg_entropy.cpp` — entropy decoding и чтение MCU
-- `jpeg_postprocess.cpp` — inverse DCT, upsampling, conversion to RGB
-- `reader.cpp`, `reader.h` — побитовое и побайтовое чтение JPEG-потока
-- `huffman.cpp`, `huffman.h` — Huffman tree и декодирование кодов
-- `fft.cpp`, `fft.h` — inverse DCT через FFTW
-- `include/jpeg_types.h` — внутренние структуры декодера
-- `main.cpp` — CLI-утилита
+Проект ориентирован именно на **baseline JPEG** и предназначен в первую очередь как учебная реализация.
 
 ---
 
-## Структура репозитория
+## Repository layout
 
-- `include/` — публичные и внутренние заголовки
-- `tests/` — unit, integration, performance, fuzz и replay regression tests
-- `utils/` — вспомогательные утилиты для тестов и работы с изображениями
-- `fuzz/corpus/` — стартовые corpus-наборы для fuzzing
-- `fuzz/artifacts/` — malformed inputs, найденные и сохранённые как regression artifacts
+- `app/` — CLI entry point
+- `include/` — публичные заголовки
+- `src/` — реализация декодера
+- `tests/` — unit, integration, regression, performance and fuzz tests
+- `utils/` — вспомогательный код для тестов и работы с изображениями
+- `fuzz/corpus_seed/` — стартовые seed corpora
+- `fuzz/artifacts/` — сохранённые reproducer-файлы и regression artifacts
 
 ---
 
-## Зависимости
+## Internal structure
 
-Основные:
+Основные части декодера:
+
+- `src/decoder.cpp` — верхнеуровневый orchestration-код и `Decode(...)`
+- `src/jpeg_segments.cpp` — parsing JPEG segments (`DQT`, `SOF0`, `DHT`, `SOS`, `COM`)
+- `src/jpeg_entropy.cpp` — entropy decoding и чтение MCU
+- `src/jpeg_postprocess.cpp` — dequantization, inverse DCT, upsampling, RGB conversion
+- `src/reader.cpp` — побитовое и побайтовое чтение входного JPEG-потока
+- `src/huffman.cpp` — Huffman tree и декодирование кодов
+- `src/fft.cpp` — inverse DCT через FFTW
+- `src/jpeg_types.h` — внутренние структуры декодера
+- `app/main.cpp` — CLI-утилита
+
+---
+
+## Dependencies
+
+Основные зависимости:
+
 - CMake
-- C++ compiler с поддержкой C++20
+- C++20 compiler
 - FFTW
 - glog
 
 Для тестов:
+
 - libjpeg
 - libpng
 
 Для fuzzing:
+
 - Clang / libFuzzer
 - AddressSanitizer
 - UndefinedBehaviorSanitizer
 
-Пример для Ubuntu:
+### Ubuntu
 
 ```bash
 sudo apt update
@@ -115,32 +110,32 @@ sudo apt install cmake pkg-config libfftw3-dev libgoogle-glog-dev libjpeg-dev li
 
 ---
 
-## Сборка
+## Build
 
-### Release / CLI
+### Release build / CLI
 
 ```bash
 cmake -S . -B cmake-build-release -DCMAKE_BUILD_TYPE=Release
 cmake --build cmake-build-release --target jpeg_decoder_cli
 ```
 
-### Debug / tests
+### Debug build / tests
 
 ```bash
 cmake -S . -B cmake-build-debug -DCMAKE_BUILD_TYPE=Debug
 cmake --build cmake-build-debug
 ```
 
-### Fuzz build
+### Fuzzing build
 
 ```bash
-cmake -S . -B cmake-build-fuzz-rel \
+cmake -S . -B cmake-build-fuzz \
   -DCMAKE_CXX_COMPILER=/usr/bin/clang++-20 \
   -DJPEG_DECODER_BUILD_FUZZERS=ON \
   -DJPEG_DECODER_BUILD_TESTS=ON \
   -DCMAKE_BUILD_TYPE=RelWithDebInfo
 
-cmake --build cmake-build-fuzz-rel --target fuzzers
+cmake --build cmake-build-fuzz --target fuzzers
 ```
 
 ---
@@ -148,8 +143,8 @@ cmake --build cmake-build-fuzz-rel --target fuzzers
 ## Usage
 
 CLI принимает:
-- входной JPEG
-- выходной файл в формате binary PPM (`P6`)
+- входной JPEG-файл
+- выходной файл в формате binary `PPM` (`P6`)
 
 Пример:
 
@@ -166,7 +161,7 @@ Comment: :)
 Saved to: out.ppm
 ```
 
-Открыть результат можно любым просмотрщиком, поддерживающим `PPM`, либо конвертировать в PNG через ImageMagick:
+При необходимости `PPM` можно конвертировать в `PNG`, например через ImageMagick:
 
 ```bash
 convert out.ppm out.png
@@ -176,27 +171,27 @@ convert out.ppm out.png
 
 ## Testing
 
-### Все тесты
+### Run all tests
 
 ```bash
 ctest --test-dir cmake-build-debug --output-on-failure
 ```
 
-### Набор тестов
+### Main test targets
 
 - `test_huffman` — unit tests for Huffman decoding
 - `test_fft` — unit tests for inverse DCT
-- `test_baseline` — integration tests on baseline JPEG files
+- `test_baseline` — integration tests on baseline JPEG inputs
 - `test_faster` — performance / stress-style test
-- `replay_artifacts` — replay проход по malformed inputs из `fuzz/artifacts/jpeg`
+- `replay_artifacts` — replay regression pass for malformed inputs from `fuzz/artifacts/jpeg`
 
-### Только performance test
+### Run only performance test
 
 ```bash
 ctest --test-dir cmake-build-debug -R test_faster --output-on-failure
 ```
 
-### Только replay malformed artifacts
+### Run only replay regression artifacts
 
 ```bash
 ctest --test-dir cmake-build-debug -R replay_artifacts --output-on-failure
@@ -206,53 +201,47 @@ ctest --test-dir cmake-build-debug -R replay_artifacts --output-on-failure
 
 ## Fuzzing
 
-Проект содержит fuzz targets:
+Проект содержит три fuzz targets:
+
+- `fuzz_jpeg`
 - `fuzz_huffman`
 - `fuzz_fft`
-- `fuzz_jpeg`
 
-### Короткий smoke-run
+### Smoke run
 
 ```bash
-./cmake-build-fuzz-rel/fuzz_jpeg    fuzz/corpus_work/jpeg    fuzz/corpus_seed/jpeg    -max_total_time=300
-./cmake-build-fuzz-rel/fuzz_huffman fuzz/corpus_work/huffman fuzz/corpus_seed/huffman -max_total_time=300
-./cmake-build-fuzz-rel/fuzz_fft     fuzz/corpus_work/fft     fuzz/corpus_seed/fft     -max_total_time=300
+./cmake-build-fuzz/fuzz_jpeg    -max_total_time=300 fuzz/corpus_work/jpeg    fuzz/corpus_seed/jpeg
+./cmake-build-fuzz/fuzz_huffman -max_total_time=300 fuzz/corpus_work/huffman fuzz/corpus_seed/huffman
+./cmake-build-fuzz/fuzz_fft     -max_total_time=300 fuzz/corpus_work/fft     fuzz/corpus_seed/fft
 ```
 
-### Что уже проверялось
+Первый каталог используется как рабочий corpus directory, второй — как seed corpus.
 
-В процессе fuzzing были найдены malformed inputs, приводившие к:
-- crash при обработке entropy-coded data
-- неконтролируемой аллокации памяти на некорректных размерах
+### Regression artifacts
 
-После исправлений эти входы используются как replay/regression artifacts.
+Во время fuzzing были найдены malformed inputs, которые теперь используются как replay/regression cases. Среди исправленных проблем были:
+
+- ошибки обработки entropy-coded data
+- некорректные ссылки на таблицы и scan metadata
+---
+
+## CI
+
+Проект содержит GitHub Actions workflow для проверки сборки и тестов.
+
+Сюда можно добавить badge:
+
+```md
+![CI](https://github.com/Snafa/jpeg-decoder/actions/workflows/ci.yml/badge.svg)
+```
 
 ---
 
-## Что было улучшено по ходу проекта
+## Future work
 
-Кроме базовой реализации декодера, в проекте были добавлены:
-- standalone CMake configuration
-- unit / integration / performance tests
-- replay regression проход по найденным malformed inputs
-- проверки корректности входных данных
-- защита от некорректных Huffman tables и невалидных scan/table references
-- защита от чрезмерных аллокаций на malformed input
-- CLI-утилита для ручного запуска
+Возможные улучшения:
 
----
-
-## Status
-
-Текущая версия:
-- умеет декодировать baseline JPEG
-- имеет standalone build
-- проходит unit / integration / performance tests
-- содержит fuzz targets и replay regression artifacts
-- имеет CLI для декодирования в `PPM`
-- CI
-
-Возможные дальнейшие улучшения:
-- более строгие фиксированные regression tests с отдельным перечислением ключевых reproducer-файлов
-- оптимизация производительности и памяти
-- поддержка дополнительных вариантов JPEG
+- поддержка progressive JPEG
+- более строгий набор фиксированных regression tests
+- дополнительная оптимизация производительности и памяти
+- расширение CLI и форматов вывода
