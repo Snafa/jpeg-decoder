@@ -9,3 +9,6 @@ fuzz/corpus_work/
 
 # Archives
 *.zip
+
+# Tools
+tools/

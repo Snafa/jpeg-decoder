@@ -214,9 +214,9 @@ ctest --test-dir cmake-build-debug -R replay_artifacts --output-on-failure
 ### Короткий smoke-run
 
 ```bash
-./cmake-build-fuzz/fuzz_jpeg    fuzz/corpus_work/jpeg    fuzz/corpus_seed/jpeg    -max_total_time=300
-./cmake-build-fuzz/fuzz_huffman fuzz/corpus_work/huffman fuzz/corpus_seed/huffman -max_total_time=300
-./cmake-build-fuzz/fuzz_fft     fuzz/corpus_work/fft     fuzz/corpus_seed/fft     -max_total_time=300
+./cmake-build-fuzz-rel/fuzz_jpeg    fuzz/corpus_work/jpeg    fuzz/corpus_seed/jpeg    -max_total_time=300
+./cmake-build-fuzz-rel/fuzz_huffman fuzz/corpus_work/huffman fuzz/corpus_seed/huffman -max_total_time=300
+./cmake-build-fuzz-rel/fuzz_fft     fuzz/corpus_work/fft     fuzz/corpus_seed/fft     -max_total_time=300
 ```
 
 ### Что уже проверялось
