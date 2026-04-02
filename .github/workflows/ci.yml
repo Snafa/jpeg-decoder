@@ -25,7 +25,8 @@ jobs:
             libfftw3-dev \
             libgoogle-glog-dev \
             zlib1g-dev \
-            libpng-dev
+            libpng-dev \
+            libjpeg-dev
 
       - name: Configure Debug
         run: |
@@ -69,7 +70,8 @@ jobs:
             libfftw3-dev \
             libgoogle-glog-dev \
             zlib1g-dev \
-            libpng-dev
+            libpng-dev \
+            libjpeg-dev
 
       - name: Configure Release
         run: |
