@@ -53,7 +53,7 @@ TEST_CASE("witch", "[jpg]") {
 }
 
 TEST_CASE("Error handling", "[jpg]") {
-    const size_t tests_count = 24;
+    constexpr size_t tests_count = 24;
     for (size_t i = 1; i <= tests_count; ++i) {
         ExpectFail("bad" + std::to_string(i) + ".jpg");
     }

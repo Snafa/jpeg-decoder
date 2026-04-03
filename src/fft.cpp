@@ -89,7 +89,7 @@ namespace jpeg_decoder {
         : impl_(std::make_unique<Impl>(width, input, output)) {
     }
 
-    void DctCalculator::Inverse() const {
+    void DctCalculator::Inverse() {
         impl_->Inverse();
     }
 

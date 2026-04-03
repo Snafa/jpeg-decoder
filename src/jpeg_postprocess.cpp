@@ -5,7 +5,7 @@
 namespace jpeg_decoder {
     void Inverse(Context &context) {
         std::vector<double> in(kTableSize), out(kTableSize);
-        const DctCalculator calc(8, &in, &out);
+        DctCalculator calc(8, &in, &out);
         for (auto &mcu: context.mcu) {
             for (auto &[comp_id, table]: mcu.blocks) {
                 const auto &[h, v, quant_table_id] = context.mcu_components.at(comp_id);

@@ -5,7 +5,9 @@
 #include <cstdint>
 #include <cstring>
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+using jpeg_decoder::DctCalculator;
+
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, const size_t size) {
     if (size < 64 * sizeof(double)) {
         return 0;
     }

@@ -1,9 +1,12 @@
-#include <../include/jpeg_decoder/decoder.h>
+#include <jpeg_decoder/decoder.h>
 
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
 #include <string>
+
+using jpeg_decoder::Decode;
+using jpeg_decoder::Image;
 
 namespace {
 
@@ -17,7 +20,7 @@ void WritePpm(const std::string& path, const Image& image) {
 
     for (int y = 0; y < image.Height(); ++y) {
         for (int x = 0; x < image.Width(); ++x) {
-            const auto [r, g, b] = image.GetPixel(y, x);
+            const auto [r, g, b] = image.Pixel(y, x);
 
             const unsigned char rgb[3] = {
                 static_cast<unsigned char>(r),
@@ -64,8 +67,8 @@ int main(int argc, char* argv[]) {
             << "Decoded successfully\n"
             << "Size: " << image.Width() << "x" << image.Height() << '\n';
 
-        if (!image.GetComment().empty()) {
-            std::cout << "Comment: " << image.GetComment() << '\n';
+        if (!image.Comment().empty()) {
+            std::cout << "Comment: " << image.Comment() << '\n';
         }
 
         std::cout << "Saved to: " << output_path << '\n';

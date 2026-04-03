@@ -1,10 +1,12 @@
-#include <../src/huffman.h>
+#include <huffman.h>
 
 #include <catch.hpp>
 
 #include <cstdint>
 #include <stdexcept>
 #include <vector>
+
+using jpeg_decoder::HuffmanTree;
 
 TEST_CASE("Huffman default") {
     HuffmanTree tree;
@@ -96,7 +98,7 @@ TEST_CASE("Huffman real") {
     REQUIRE_FALSE(tree.Move(1, x));
     REQUIRE(tree.Move(0, x));
     REQUIRE(x == 2);
-    REQUIRE_THROWS_AS(([&tree, &x]() {
+    REQUIRE_THROWS_AS(([&tree, &x] {
                           for (int i = 0; i < 32; ++i) {
                               bool is_terminal = tree.Move(1, x);
                               REQUIRE_FALSE(is_terminal);

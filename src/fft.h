@@ -8,7 +8,7 @@ namespace jpeg_decoder {
     public:
         DctCalculator(size_t width, std::vector<double> *input, std::vector<double> *output);
 
-        void Inverse() const;
+        void Inverse();
 
         ~DctCalculator();
 

@@ -1,9 +1,8 @@
-#include <../include/jpeg_decoder/decoder.h>
+#include <jpeg_decoder/decoder.h>
 
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <stdexcept>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -13,10 +12,12 @@
 #endif
 
 namespace fs = std::filesystem;
+using jpeg_decoder::Decode;
+using jpeg_decoder::Image;
 
 int main() {
     try {
-        const fs::path base = fs::path(HSE_TASK_DIR);
+        const auto base = fs::path(HSE_TASK_DIR);
         const fs::path dir = base / "fuzz" / "artifacts" / "jpeg";
 
         if (!fs::exists(dir)) {
@@ -31,7 +32,7 @@ int main() {
             }
         }
 
-        std::sort(files.begin(), files.end());
+        std::ranges::sort(files);
 
         if (files.empty()) {
             std::cerr << "No artifact files found in: " << dir << '\n';

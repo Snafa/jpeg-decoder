@@ -4,15 +4,17 @@
 
 #include <cstdint>
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+using jpeg_decoder::HuffmanTree;
+
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, const size_t size) {
     FuzzedDataProvider provider(data, size);
-    auto code_lengths = provider.ConsumeBytes<uint8_t>(16);
+    const auto code_lengths = provider.ConsumeBytes<uint8_t>(16);
     size_t sum = 0;
     for (const auto& x : code_lengths) {
         sum += x;
     }
-    auto values = provider.ConsumeBytes<uint8_t>(sum);
-    auto path = provider.ConsumeRemainingBytes<uint8_t>();
+    const auto values = provider.ConsumeBytes<uint8_t>(sum);
+    const auto path = provider.ConsumeRemainingBytes<uint8_t>();
     try {
         int value = 0;
         HuffmanTree tree;

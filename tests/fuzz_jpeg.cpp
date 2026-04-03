@@ -1,14 +1,16 @@
-#include <../include/jpeg_decoder/decoder.h>
+#include <jpeg_decoder/decoder.h>
 
 #include <cstdint>
 #include <sstream>
 #include <string>
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
-    std::string s(reinterpret_cast<const char *>(data), size);
+using jpeg_decoder::Decode;
+
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, const size_t size) {
+    const std::string s(reinterpret_cast<const char *>(data), size);
     std::stringstream ss(s);
     try {
-        auto image = Decode(ss);
+        const auto image = Decode(ss);
         (void)image;
     } catch (...) {
     }
