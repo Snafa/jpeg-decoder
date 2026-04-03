@@ -2,6 +2,6 @@
 
 #include <string>
 
-#include "../include/image.h"
+#include "../include/jpeg_decoder/image.h"
 
-Image ReadJpg(const std::string& filename);
+jpeg_decoder::Image ReadJpg(const std::string& filename);

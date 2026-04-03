@@ -1,9 +1,9 @@
 #include "test_commons.hpp"
 
 #include <catch.hpp>
-#include <decoder.h>
+#include <../include/jpeg_decoder/decoder.h>
 
-#include "../include/image.h"
+#include "../include/jpeg_decoder/image.h"
 #include "png_encoder.hpp"
 #include "libjpg_reader.hpp"
 
@@ -35,19 +35,19 @@ int sqr(int x) {  // NOLINT
     return x * x;
 }
 
-double Distance(const RGB& lhs, const RGB& rhs) {
+double Distance(const jpeg_decoder::RGB& lhs, const jpeg_decoder::RGB& rhs) {
     return sqrt(sqr(lhs.r - rhs.r) + sqr(lhs.g - rhs.g) + sqr(lhs.b - rhs.b));
 }
 
-void Compare(const Image& actual, const Image& expected) {
+void Compare(const jpeg_decoder::Image& actual, const jpeg_decoder::Image& expected) {
     double max = 0;
     double mean = 0;
     REQUIRE(actual.Width() == expected.Width());
     REQUIRE(actual.Height() == expected.Height());
     for (size_t y = 0; y < actual.Height(); ++y) {
         for (size_t x = 0; x < actual.Width(); ++x) {
-            auto actual_data = actual.GetPixel(y, x);
-            auto expected_data = expected.GetPixel(y, x);
+            auto actual_data = actual.Pixel(y, x);
+            auto expected_data = expected.Pixel(y, x);
             auto diff = Distance(actual_data, expected_data);
             max = std::max(max, diff);
             mean += diff;
@@ -65,9 +65,9 @@ void CheckImage(const std::string& filename, const std::string& expected_comment
     if (!fin.is_open()) {
         throw std::invalid_argument("Cannot open a file");
     }
-    auto image = Decode(fin);
+    auto image = jpeg_decoder::Decode(fin);
     fin.close();
-    REQUIRE(image.GetComment() == expected_comment);
+    REQUIRE(image.Comment() == expected_comment);
     if (output_filename.has_value() && kArtifactsDir.empty()) {
         WritePng(output_filename.value(), image);
     }
@@ -84,5 +84,5 @@ void ExpectFail(const std::string& filename) {
     if (!fin.is_open()) {
         throw std::invalid_argument("Cannot open a file");
     }
-    CHECK_THROWS(Decode(fin));
+    CHECK_THROWS(jpeg_decoder::Decode(fin));
 }

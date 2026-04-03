@@ -2,6 +2,6 @@
 
 #include <string>
 
-#include "../include/image.h"
+#include "../include/jpeg_decoder/image.h"
 
-void WritePng(const std::string& filename, const Image& image);
+void WritePng(const std::string& filename, const jpeg_decoder::Image& image);

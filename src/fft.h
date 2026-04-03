@@ -1,18 +1,19 @@
 #pragma once
 
-#include <cstddef>
 #include <vector>
 #include <memory>
 
-class DctCalculator {
-public:
-    DctCalculator(size_t width, std::vector<double> *input, std::vector<double> *output);
+namespace jpeg_decoder {
+    class DctCalculator {
+    public:
+        DctCalculator(size_t width, std::vector<double> *input, std::vector<double> *output);
 
-    void Inverse();
+        void Inverse() const;
 
-    ~DctCalculator();
+        ~DctCalculator();
 
-private:
-    class Impl;
-    std::unique_ptr<Impl> impl_;
-};
+    private:
+        class Impl;
+        std::unique_ptr<Impl> impl_;
+    };
+}

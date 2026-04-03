@@ -1,27 +1,30 @@
 #pragma once
 
 #include <vector>
-#include <cstddef>
 #include <cstdint>
 #include <memory>
 
-class HuffmanTree {
-public:
-    HuffmanTree();
+namespace jpeg_decoder {
+    class HuffmanTree {
+    public:
+        HuffmanTree();
 
-    HuffmanTree(const HuffmanTree&) = delete;
-    HuffmanTree& operator=(const HuffmanTree&) = delete;
+        HuffmanTree(const HuffmanTree &) = delete;
 
-    HuffmanTree(HuffmanTree&&);
-    HuffmanTree& operator=(HuffmanTree&&);
+        HuffmanTree &operator=(const HuffmanTree &) = delete;
 
-    void Build(const std::vector<uint8_t>& code_lengths, const std::vector<uint8_t>& values);
+        HuffmanTree(HuffmanTree &&) noexcept;
 
-    bool Move(bool bit, int& value);
+        HuffmanTree &operator=(HuffmanTree &&) noexcept;
 
-    ~HuffmanTree();
+        void Build(const std::vector<uint8_t> &code_lengths, const std::vector<uint8_t> &values);
 
-private:
-    class Impl;
-    std::unique_ptr<Impl> impl_;
-};
+        bool Move(bool bit, int &value);
+
+        ~HuffmanTree();
+
+    private:
+        class Impl;
+        std::unique_ptr<Impl> impl_;
+    };
+}

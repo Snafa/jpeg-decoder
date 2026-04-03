@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <stdexcept>
 
-Image ReadJpg(const std::string& filename) {
+jpeg_decoder::Image ReadJpg(const std::string& filename) {
     struct jpeg_decompress_struct cinfo;
     struct jpeg_error_mgr err;
     FILE* infile = fopen(filename.c_str(), "rb");
@@ -25,13 +25,13 @@ Image ReadJpg(const std::string& filename) {
     JSAMPARRAY buffer =
         (*cinfo.mem->alloc_sarray)((j_common_ptr)&cinfo, JPOOL_IMAGE, row_stride, 1);  // NOLINT
 
-    Image result(cinfo.output_width, cinfo.output_height);
+    jpeg_decoder::Image result(cinfo.output_width, cinfo.output_height);
     size_t y = 0;
 
     while (cinfo.output_scanline < cinfo.output_height) {
         (void)jpeg_read_scanlines(&cinfo, buffer, 1);
         for (size_t x = 0; x < result.Width(); ++x) {
-            RGB pixel;
+            jpeg_decoder::RGB pixel;
             if (cinfo.output_components == 3) {
                 pixel.r = buffer[0][x * 3];
                 pixel.g = buffer[0][x * 3 + 1];
@@ -39,7 +39,7 @@ Image ReadJpg(const std::string& filename) {
             } else {
                 pixel.r = pixel.g = pixel.b = buffer[0][x];
             }
-            result.SetPixel(y, x, pixel);
+            result.Pixel(y, x) = pixel;
         }
         ++y;
     }

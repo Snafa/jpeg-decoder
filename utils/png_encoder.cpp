@@ -5,7 +5,7 @@
 #include <string>
 #include <stdexcept>
 
-void WritePng(const std::string& filename, const Image& image) {
+void WritePng(const std::string& filename, const jpeg_decoder::Image& image) {
     FILE* fp = fopen(filename.c_str(), "wb");
     if (!fp) {
         throw std::runtime_error("Can't open file for writing " + filename);
@@ -26,7 +26,7 @@ void WritePng(const std::string& filename, const Image& image) {
     for (size_t y = 0; y < image.Height(); y++) {
         bytes[y] = (png_byte*)malloc(png_get_rowbytes(png, info));  // NOLINT
         for (size_t x = 0; x < image.Width(); ++x) {
-            auto pixel = image.GetPixel(y, x);
+            auto pixel = image.Pixel(y, x);
             bytes[y][x * 4] = pixel.r;
             bytes[y][x * 4 + 1] = pixel.g;
             bytes[y][x * 4 + 2] = pixel.b;

@@ -2,10 +2,6 @@ cmake_minimum_required(VERSION 3.20)
 
 project(jpeg_decoder LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
 option(JPEG_DECODER_BUILD_TESTS "Build tests" ON)
 option(JPEG_DECODER_BUILD_FUZZERS "Build libFuzzer targets" OFF)
 
@@ -22,6 +18,9 @@ add_library(jpeg_decoder
         src/huffman.cpp
         src/reader.cpp
 )
+
+target_compile_features(jpeg_decoder PUBLIC cxx_std_20)
+set_target_properties(jpeg_decoder PROPERTIES CXX_EXTENSIONS OFF)
 
 target_include_directories(jpeg_decoder
         PUBLIC

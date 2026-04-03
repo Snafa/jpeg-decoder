@@ -4,39 +4,43 @@
 #include <cstdint>
 #include <iosfwd>
 
-#define SIZE_OF_BUFFER 4096
+namespace jpeg_decoder {
+    class Reader {
+    public:
+        explicit Reader(std::istream &input);
 
-class Reader {
-public:
-    explicit Reader(std::istream& input);
+        Reader(const Reader &) = delete;
 
-    Reader(const Reader&) = delete;
-    Reader& operator=(const Reader&) = delete;
+        Reader &operator=(const Reader &) = delete;
 
-    Reader(Reader&&) = delete;
-    Reader& operator=(Reader&&) = delete;
+        Reader(Reader &&) = delete;
 
-    ~Reader();
+        Reader &operator=(Reader &&) = delete;
 
-    uint8_t ReadBit();
+        ~Reader();
 
-    uint8_t ReadByte();
+        uint8_t ReadBit();
 
-    uint16_t Read2Bytes();
+        uint8_t ReadByte();
 
-    uint16_t ReadMarker();
+        uint16_t Read2Bytes();
 
-    bool IsEnd();
+        uint16_t ReadMarker();
 
-private:
-    std::istream* input_;
+        bool IsEnd();
 
-    std::uint8_t buffer_[SIZE_OF_BUFFER];
-    std::size_t bytes_in_buffer_;
-    std::size_t position_byte_;
+    private:
+        static constexpr size_t SizeOfBuffer = 4096;
 
-    std::size_t position_bit_;
-    std::uint8_t current_byte_;
+        std::istream *input_;
 
-    void ReadBuffer();
-};
+        std::uint8_t buffer_[SizeOfBuffer]{};
+        std::size_t bytes_in_buffer_;
+        std::size_t position_byte_;
+
+        std::size_t position_bit_;
+        std::uint8_t current_byte_;
+
+        void ReadBuffer();
+    };
+}

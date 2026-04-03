@@ -1,8 +1,12 @@
 #pragma once
 
 #include <jpeg_types.h>
-#include <image.h>
+#include <jpeg_decoder/image.h>
 
-void Inverse(Context&);
-std::vector<std::vector<YCbCr>> UpSampling(const Context&);
-Image ConvertYCbCrToRgb(const std::vector<std::vector<YCbCr>>&);
+namespace jpeg_decoder {
+    void Inverse(Context &);
+
+    std::vector<std::vector<YCbCr> > UpSampling(const Context &);
+
+    Image ConvertYCbCrToRgb(const std::vector<std::vector<YCbCr> > &);
+}

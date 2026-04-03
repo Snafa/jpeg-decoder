@@ -1,4 +1,4 @@
-#include <decoder.h>
+#include <../include/jpeg_decoder/decoder.h>
 
 #include <filesystem>
 #include <fstream>
