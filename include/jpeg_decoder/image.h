@@ -37,7 +37,7 @@ namespace jpeg_decoder {
             return height_;
         }
 
-        [[nodiscard]] RGB Pixel(const size_t y, const size_t x) const {
+        [[nodiscard]] const RGB& Pixel(const size_t y, const size_t x) const {
             return data_[y * width_ + x];
         }
 

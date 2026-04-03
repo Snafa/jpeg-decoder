@@ -1,0 +1,9 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+find_dependency(PkgConfig)
+pkg_check_modules(FFTW3 REQUIRED IMPORTED_TARGET fftw3)
+find_dependency(glog)
+
+include("${CMAKE_CURRENT_LIST_DIR}/jpeg_decoderTargets.cmake")

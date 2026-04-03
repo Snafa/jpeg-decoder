@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.20)
+project(jpeg_decoder VERSION 0.1.0 LANGUAGES CXX)
 
-project(jpeg_decoder LANGUAGES CXX)
+include(CTest)
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
-option(JPEG_DECODER_BUILD_TESTS "Build tests" ON)
 option(JPEG_DECODER_BUILD_FUZZERS "Build libFuzzer targets" OFF)
 
 find_package(PkgConfig REQUIRED)
@@ -24,7 +26,8 @@ set_target_properties(jpeg_decoder PROPERTIES CXX_EXTENSIONS OFF)
 
 target_include_directories(jpeg_decoder
         PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${CMAKE_CURRENT_SOURCE_DIR}/utils
@@ -40,14 +43,55 @@ add_executable(jpeg_decoder_cli
         app/main.cpp
 )
 
-target_link_libraries(jpeg_decoder_cli
-        PRIVATE
+add_library(jpeg_decoder::jpeg_decoder
+        ALIAS
         jpeg_decoder
 )
 
-if(JPEG_DECODER_BUILD_TESTS)
-    enable_testing()
+target_link_libraries(jpeg_decoder_cli
+        PRIVATE
+        jpeg_decoder::jpeg_decoder
+)
 
+install(TARGETS jpeg_decoder
+        EXPORT jpeg_decoderTargets
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
+install(TARGETS jpeg_decoder_cli
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+install(DIRECTORY include/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(EXPORT jpeg_decoderTargets
+        FILE jpeg_decoderTargets.cmake
+        NAMESPACE jpeg_decoder::
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/jpeg_decoder
+)
+
+write_basic_package_version_file(
+        "${CMAKE_CURRENT_BINARY_DIR}/jpeg_decoderConfigVersion.cmake"
+        VERSION ${PROJECT_VERSION}
+        COMPATIBILITY SameMajorVersion
+)
+
+configure_package_config_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/jpeg_decoderConfig.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/jpeg_decoderConfig.cmake"
+        INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/jpeg_decoder
+)
+
+install(FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/jpeg_decoderConfig.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/jpeg_decoderConfigVersion.cmake"
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/jpeg_decoder
+)
+
+if (BUILD_TESTING)
     find_package(JPEG REQUIRED)
     find_package(PNG REQUIRED)
 
@@ -69,7 +113,7 @@ if(JPEG_DECODER_BUILD_TESTS)
 
         target_link_libraries(${target_name}
                 PRIVATE
-                jpeg_decoder
+                jpeg_decoder::jpeg_decoder
         )
 
         target_include_directories(${target_name}
@@ -95,7 +139,7 @@ if(JPEG_DECODER_BUILD_TESTS)
 
         target_link_libraries(${target_name}
                 PRIVATE
-                jpeg_decoder
+                jpeg_decoder::jpeg_decoder
                 JPEG::JPEG
                 PNG::PNG
         )
@@ -131,7 +175,7 @@ if(JPEG_DECODER_BUILD_TESTS)
 
     target_link_libraries(replay_artifacts
             PRIVATE
-            jpeg_decoder
+            jpeg_decoder::jpeg_decoder
     )
 
     target_include_directories(replay_artifacts
@@ -149,12 +193,12 @@ if(JPEG_DECODER_BUILD_TESTS)
 
     add_test(NAME replay_artifacts COMMAND replay_artifacts)
     set_tests_properties(replay_artifacts PROPERTIES LABELS "regression;malformed")
-endif()
+endif ()
 
-if(JPEG_DECODER_BUILD_FUZZERS)
-    if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+if (JPEG_DECODER_BUILD_FUZZERS)
+    if (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         message(FATAL_ERROR "Fuzzers require Clang/libFuzzer. Configure with clang++.")
-    endif()
+    endif ()
 
     function(add_decoder_fuzzer target_name source_file)
         add_executable(${target_name}
@@ -163,7 +207,7 @@ if(JPEG_DECODER_BUILD_FUZZERS)
 
         target_link_libraries(${target_name}
                 PRIVATE
-                jpeg_decoder
+                jpeg_decoder::jpeg_decoder
         )
 
         target_include_directories(${target_name}
@@ -194,4 +238,4 @@ if(JPEG_DECODER_BUILD_FUZZERS)
     add_custom_target(fuzzers
             DEPENDS fuzz_huffman fuzz_fft fuzz_jpeg
     )
-endif()
+endif ()

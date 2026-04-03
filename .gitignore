@@ -4,6 +4,10 @@
 # CMake build directories
 cmake-build-*/
 
+# CMake build directory
+build/
+build-install/
+
 # Fuzzing
 fuzz/corpus_work/
 
@@ -12,3 +16,7 @@ fuzz/corpus_work/
 
 # Tools
 tools/
+
+# Install
+install/
+install_test/

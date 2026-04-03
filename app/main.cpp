@@ -18,8 +18,8 @@ void WritePpm(const std::string& path, const Image& image) {
 
     out << "P6\n" << image.Width() << ' ' << image.Height() << "\n255\n";
 
-    for (int y = 0; y < image.Height(); ++y) {
-        for (int x = 0; x < image.Width(); ++x) {
+    for (size_t y = 0; y < image.Height(); ++y) {
+        for (size_t x = 0; x < image.Width(); ++x) {
             const auto [r, g, b] = image.Pixel(y, x);
 
             const unsigned char rgb[3] = {
